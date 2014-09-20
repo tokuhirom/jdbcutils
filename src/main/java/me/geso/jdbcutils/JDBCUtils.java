@@ -95,7 +95,6 @@ public class JDBCUtils {
 	 * 
 	 * @param connection
 	 * @param sql
-	 * @param params
 	 * @return
 	 * @throws RichSQLException
 	 */
