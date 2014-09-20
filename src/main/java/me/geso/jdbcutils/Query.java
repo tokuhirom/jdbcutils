@@ -16,7 +16,7 @@ public class Query {
 	 * @param sql
 	 * @param params
 	 */
-	public Query(final String sql, final Object... params) {
+	public Query(final String sql, final Object[] params) {
 		this.sql = sql;
 		this.params = params;
 	}
