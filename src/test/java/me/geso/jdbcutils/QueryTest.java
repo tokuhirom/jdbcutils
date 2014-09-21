@@ -12,10 +12,10 @@ public class QueryTest {
 	public void test() {
 		Query query = new Query("SELECT * FROM member", Arrays.asList( 1,2,3 ));
 		assertEquals("SELECT * FROM member", query.getSQL());
-		assertEquals(3, query.getParameers().size());
-		assertEquals(1, query.getParameers().get(0));
-		assertEquals(2, query.getParameers().get(1));
-		assertEquals(3, query.getParameers().get(2));
+		assertEquals(3, query.getParameters().size());
+		assertEquals(1, query.getParameters().get(0));
+		assertEquals(2, query.getParameters().get(1));
+		assertEquals(3, query.getParameters().get(2));
 	}
 
 }

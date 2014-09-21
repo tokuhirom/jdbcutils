@@ -27,7 +27,7 @@ public class JDBCUtils {
 			final ResultSetCallback<R> callback)
 			throws RichSQLException {
 		return JDBCUtils.executeQuery(connection,
-				query.getSQL(), query.getParameers(),
+				query.getSQL(), query.getParameters(),
 				callback);
 	}
 
@@ -68,7 +68,7 @@ public class JDBCUtils {
 			final Query query)
 			throws RichSQLException {
 		return JDBCUtils.executeUpdate(connection, query.getSQL(),
-				query.getParameers());
+				query.getParameters());
 	}
 
 	/**

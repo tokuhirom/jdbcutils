@@ -38,7 +38,7 @@ public class Query {
 	 * 
 	 * @return
 	 */
-	public List<Object> getParameers() {
+	public List<Object> getParameters() {
 		return params;
 	}
 }
