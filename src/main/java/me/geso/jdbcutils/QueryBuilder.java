@@ -21,12 +21,24 @@ public class QueryBuilder {
 		this.identifierQuoteString = identifierQuoteString;
 	}
 
-	public QueryBuilder(final Connection connection) throws SQLException {
-		this(connection.getMetaData().getIdentifierQuoteString());
+	public QueryBuilder(final Connection connection) {
+		try {
+			this.parameters = new ArrayList<>();
+			this.query = new StringBuilder();
+			this.identifierQuoteString = connection.getMetaData()
+					.getIdentifierQuoteString();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public QueryBuilder appendQuery(final String s) {
 		this.query.append(s);
+		return this;
+	}
+
+	public QueryBuilder appendQuery(final long l) {
+		this.query.append(""+l);
 		return this;
 	}
 
