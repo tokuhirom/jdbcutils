@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Utility functions for JDBC.
@@ -41,7 +43,7 @@ public class JDBCUtils {
 	 */
 	public static <R> R executeQuery(final Connection connection,
 			final String sql,
-			final Object[] params,
+			final List<Object> params,
 			final ResultSetCallback<R> callback)
 			throws RichSQLException {
 		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -80,7 +82,7 @@ public class JDBCUtils {
 	 */
 	public static int executeUpdate(final Connection connection,
 			final String sql,
-			final Object[] params)
+			final List<Object> params)
 			throws RichSQLException {
 		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
 			JDBCUtils.fillPreparedStatementParams(ps, params);
@@ -101,11 +103,16 @@ public class JDBCUtils {
 	public static int executeUpdate(final Connection connection,
 			final String sql)
 			throws RichSQLException {
-		return JDBCUtils.executeUpdate(connection, sql, new Object[] {});
+		return JDBCUtils
+				.executeUpdate(connection, sql, Collections.emptyList());
 	}
 
 	/**
 	 * Fill parameters for prepared statement.
+	 * 
+	 * <pre>
+	 * <code>JDBCUtils.fillPreparedStatementParams(preparedStatement, ImmutableList.of(1,2,3));</code>
+	 * </pre>
 	 * 
 	 * @param preparedStatement
 	 * @param params
@@ -113,9 +120,9 @@ public class JDBCUtils {
 	 */
 	public static void fillPreparedStatementParams(
 			final PreparedStatement preparedStatement,
-			final Object... params) throws SQLException {
-		for (int i = 0; i < params.length; ++i) {
-			preparedStatement.setObject(i + 1, params[i]);
+			final List<Object> params) throws SQLException {
+		for (int i = 0; i < params.size(); ++i) {
+			preparedStatement.setObject(i + 1, params.get(i));
 		}
 	}
 }

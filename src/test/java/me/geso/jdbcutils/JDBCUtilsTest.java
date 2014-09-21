@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Arrays;
 
 import lombok.SneakyThrows;
 
@@ -48,11 +49,11 @@ public class JDBCUtilsTest {
 						.executeUpdate(
 								connection,
 								"INSERT INTO x (name) VALUES (?)",
-								new Object[] { "hoge" }));
+								Arrays.asList("hoge")));
 		assertEquals("hoge", JDBCUtils.executeQuery(
 				connection,
 				"SELECT * FROM x WHERE name=?",
-				new Object[] { "hoge" },
+				Arrays.asList("hoge"),
 				(rs) -> {
 					assertTrue(rs.next());
 					return rs.getString("name");

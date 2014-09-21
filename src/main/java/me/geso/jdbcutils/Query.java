@@ -1,5 +1,8 @@
 package me.geso.jdbcutils;
 
+import java.util.Collections;
+import java.util.List;
+
 import lombok.ToString;
 
 /**
@@ -8,7 +11,7 @@ import lombok.ToString;
 @ToString
 public class Query {
 	private final String sql;
-	private final Object[] params;
+	private final List<Object> params;
 
 	/**
 	 * Create new instance.
@@ -16,9 +19,9 @@ public class Query {
 	 * @param sql
 	 * @param params
 	 */
-	public Query(final String sql, final Object[] params) {
+	public Query(final String sql, final List<Object> params) {
 		this.sql = sql;
-		this.params = params;
+		this.params = Collections.unmodifiableList(params);
 	}
 
 	/**
@@ -32,9 +35,10 @@ public class Query {
 
 	/**
 	 * Get parameters.
+	 * 
 	 * @return
 	 */
-	public Object[] getParameers() {
+	public List<Object> getParameers() {
 		return params;
 	}
 }
