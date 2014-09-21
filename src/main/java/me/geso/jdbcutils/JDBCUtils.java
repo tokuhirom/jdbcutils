@@ -125,4 +125,39 @@ public class JDBCUtils {
 			preparedStatement.setObject(i + 1, params.get(i));
 		}
 	}
+
+	/**
+	 * Quote SQL identifier. You should get identifierQuoteString from
+	 * DatabaseMetadata.
+	 *
+	 * @param identifier
+	 * @param identifierQuoteString
+	 * @return Escaped identifier.
+	 */
+	public static String quoteIdentifier(final String identifier,
+			final String identifierQuoteString) {
+		return identifierQuoteString
+				+ identifier.replace(identifierQuoteString,
+						identifierQuoteString + identifierQuoteString)
+				+ identifierQuoteString;
+	}
+
+	/**
+	 * Quote SQL identifier.
+	 * 
+	 * @param identifier
+	 * @param connection
+	 * @return
+	 * @throws SQLException
+	 */
+	public static String quoteIdentifier(final String identifier,
+			final Connection connection) throws SQLException {
+		if (connection == null) {
+			throw new NullPointerException();
+		}
+		String identifierQuoteString = connection.getMetaData()
+				.getIdentifierQuoteString();
+		return quoteIdentifier(identifier, identifierQuoteString);
+	}
+
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import lombok.SneakyThrows;
@@ -58,5 +59,23 @@ public class JDBCUtilsTest {
 					assertTrue(rs.next());
 					return rs.getString("name");
 				}));
+	}
+
+	@Test
+	public void testQuoteIdentifier() throws SQLException {
+		{
+			String got = JDBCUtils.quoteIdentifier(
+					"hogefuga\"higehige\"hagahaga",
+					"\"");
+			assertEquals("\"hogefuga\"\"higehige\"\"hagahaga\"", got);
+		}
+		{
+			String q = this.connection.getMetaData().getIdentifierQuoteString();
+			assertEquals("`", q);
+			String got = JDBCUtils.quoteIdentifier(
+					"hogefuga`higehige`hagahaga",
+					this.connection);
+			assertEquals("`hogefuga``higehige``hagahaga`", got);
+		}
 	}
 }
