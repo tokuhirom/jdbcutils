@@ -38,7 +38,7 @@ public class QueryBuilder {
 	}
 
 	public QueryBuilder appendQuery(final long l) {
-		this.query.append(""+l);
+		this.query.append("" + l);
 		return this;
 	}
 
@@ -55,6 +55,10 @@ public class QueryBuilder {
 	}
 
 	public QueryBuilder addParameter(final Object o) {
+		if (o instanceof List) {
+			throw new IllegalArgumentException(
+					"Do not pass the List to here. You may want to use addParameters().");
+		}
 		this.parameters.add(o);
 		return this;
 	}
@@ -76,9 +80,19 @@ public class QueryBuilder {
 		return query;
 	}
 
-	public QueryBuilder appendQueryAndParam(String s, Object o) {
+	public QueryBuilder appendQueryAndParameter(String s, Object o) {
+		if (o instanceof List) {
+			throw new IllegalArgumentException(
+					"Do not pass the List to here. You may want to use appendQueryAndParameters().");
+		}
 		this.appendQuery(s);
 		this.addParameter(o);
+		return this;
+	}
+
+	public QueryBuilder appendQueryAndParameters(String s, Collection<Object> o) {
+		this.appendQuery(s);
+		this.addParameters(o);
 		return this;
 	}
 }

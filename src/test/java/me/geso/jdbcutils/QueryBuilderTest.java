@@ -19,13 +19,24 @@ public class QueryBuilderTest {
 	}
 
 	@Test
-	public void testAppendQueryAndParam() {
+	public void testAppendQueryAndParameter() {
 		Query q = new QueryBuilder("`")
 				.appendQuery("SELECT * FROM member WHERE ")
-				.appendQueryAndParam("id=?", 9)
+				.appendQueryAndParameter("id=?", 9)
 				.build();
 		assertThat(q.getSQL(), is("SELECT * FROM member WHERE id=?"));
 		assertThat(q.getParameters(), is(Arrays.asList(9)));
+	}
+
+	@Test
+	public void testAppendQueryAndParameters() {
+		Query q = new QueryBuilder("`")
+				.appendQuery("SELECT * FROM member WHERE ")
+				.appendQueryAndParameters("id IN (?,?,?)",
+						Arrays.asList(1, 2, 3))
+				.build();
+		assertThat(q.getSQL(), is("SELECT * FROM member WHERE id IN (?,?,?)"));
+		assertThat(q.getParameters(), is(Arrays.asList(1, 2, 3)));
 	}
 
 	@Test
@@ -42,10 +53,10 @@ public class QueryBuilderTest {
 	public void testAddParameters() {
 		Query q = new QueryBuilder("`")
 				.appendQuery("SELECT * FROM member WHERE id IN (?,?,?)")
-				.addParameters(Arrays.asList(1,2,3))
+				.addParameters(Arrays.asList(1, 2, 3))
 				.build();
 		assertThat(q.getSQL(), is("SELECT * FROM member WHERE id IN (?,?,?)"));
-		assertThat(q.getParameters(), is(Arrays.asList(1,2,3)));
+		assertThat(q.getParameters(), is(Arrays.asList(1, 2, 3)));
 	}
 
 	@Test
@@ -67,6 +78,5 @@ public class QueryBuilderTest {
 		assertThat(q.getSQL(), is("SELECT * FROM `order`"));
 		assertThat(q.getParameters(), is(Arrays.asList()));
 	}
-
 
 }
