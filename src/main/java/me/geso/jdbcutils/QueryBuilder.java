@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Builder class for {@code Query} class.
@@ -81,9 +82,9 @@ public class QueryBuilder {
 	}
 
 	public QueryBuilder appendQueryAndParameter(String s, Object o) {
-		if (o instanceof List) {
+		if (o instanceof Collection) {
 			throw new IllegalArgumentException(
-					"Do not pass the List to here. You may want to use appendQueryAndParameters().");
+					"Do not pass the Collection to here. You may want to use appendQueryAndParameters().");
 		}
 		this.appendQuery(s);
 		this.addParameter(o);
@@ -93,6 +94,22 @@ public class QueryBuilder {
 	public QueryBuilder appendQueryAndParameters(String s, Collection<Object> o) {
 		this.appendQuery(s);
 		this.addParameters(o);
+		return this;
+	}
+
+	public QueryBuilder in(Collection<?> objects) {
+		this.appendQuery(" IN ("
+				+ objects.stream().map(it -> "?")
+						.collect(Collectors.joining(",")) + ")");
+		this.addParameters(objects);
+		return this;
+	}
+
+	public QueryBuilder notIn(Collection<?> objects) {
+		this.appendQuery(" NOT IN ("
+				+ objects.stream().map(it -> "?")
+						.collect(Collectors.joining(",")) + ")");
+		this.addParameters(objects);
 		return this;
 	}
 }

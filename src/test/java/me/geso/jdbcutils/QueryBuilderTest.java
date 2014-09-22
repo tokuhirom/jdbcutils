@@ -79,4 +79,24 @@ public class QueryBuilderTest {
 		assertThat(q.getParameters(), is(Arrays.asList()));
 	}
 
+	@Test
+	public void testIn() {
+		Query q = new QueryBuilder("`")
+				.appendQuery("SELECT * FROM x WHERE id ")
+				.in(Arrays.asList(1,2,3))
+				.build();
+		assertThat(q.getSQL(), is("SELECT * FROM x WHERE id  IN (?,?,?)"));
+		assertThat(q.getParameters(), is(Arrays.asList(1,2,3)));
+	}
+
+	@Test
+	public void testNotIn() {
+		Query q = new QueryBuilder("`")
+				.appendQuery("SELECT * FROM x WHERE id ")
+				.notIn(Arrays.asList(1,2,3))
+				.build();
+		assertThat(q.getSQL(), is("SELECT * FROM x WHERE id  NOT IN (?,?,?)"));
+		assertThat(q.getParameters(), is(Arrays.asList(1,2,3)));
+	}
+
 }
