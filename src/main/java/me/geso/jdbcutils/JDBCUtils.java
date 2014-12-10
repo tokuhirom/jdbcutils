@@ -63,8 +63,6 @@ public class JDBCUtils {
 	 * @param connection
 	 * @param sql
 	 * @param params
-	 * @param callback
-	 * @return Generated value from the callback
 	 * @throws RichSQLException
 	 */
 	public static void executeQuery(final Connection connection,
