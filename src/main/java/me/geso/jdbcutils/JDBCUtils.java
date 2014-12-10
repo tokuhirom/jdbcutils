@@ -57,6 +57,30 @@ public class JDBCUtils {
 	}
 
 	/**
+	 * Execute query without callback.
+	 * This method is useful when calling the SELECT query has side effects, e.g. `SELECT GET_LOCK('hoge', 3)`.
+	 * 
+	 * @param connection
+	 * @param sql
+	 * @param params
+	 * @param callback
+	 * @return Generated value from the callback
+	 * @throws RichSQLException
+	 */
+	public static void executeQuery(final Connection connection,
+			final String sql,
+			final List<Object> params)
+			throws RichSQLException {
+		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
+			JDBCUtils.fillPreparedStatementParams(ps, params);
+			try (final ResultSet rs = ps.executeQuery()) {
+			}
+		} catch (final SQLException ex) {
+			throw new RichSQLException(ex, sql, params);
+		}
+	}
+
+	/**
 	 * Execute query.
 	 * 
 	 * @param connection

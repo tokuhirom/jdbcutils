@@ -37,13 +37,6 @@
 		</license>
 	</licenses>
 
-	<repositories>
-		<repository>
-			<id>tokuhirom</id>
-			<url>https://tokuhirom.github.io/maven/releases/</url>
-		</repository>
-	</repositories>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>

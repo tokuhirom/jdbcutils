@@ -1,6 +1,7 @@
 package me.geso.jdbcutils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -59,6 +60,10 @@ public class JDBCUtilsTest {
 					assertTrue(rs.next());
 					return rs.getString("name");
 				}));
+		JDBCUtils.executeQuery(
+				connection,
+				"SELECT GET_LOCK('hoge', 100)",
+				Arrays.asList());
 	}
 
 	@Test
