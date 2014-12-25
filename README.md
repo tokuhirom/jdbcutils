@@ -16,4 +16,4 @@ This is a tiny utility library for JDBC.
 
 You can see the javadoc on javadoc.io.
 
-http://www.javadoc.io/doc/me.geso/jdbcutils/0.6.2
+http://www.javadoc.io/doc/me.geso/jdbcutils/
