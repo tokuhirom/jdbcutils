@@ -3,9 +3,13 @@ package me.geso.jdbcutils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility functions for JDBC.
@@ -72,6 +76,42 @@ public class JDBCUtils {
 		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
 			JDBCUtils.fillPreparedStatementParams(ps, params);
 			try (final ResultSet rs = ps.executeQuery()) {
+			}
+		} catch (final SQLException ex) {
+			throw new RichSQLException(ex, sql, params);
+		}
+	}
+
+	/**
+	 * Execute query without callback.
+	 * This method returns results as {@code List<Map<String, Object>>}.
+	 * 
+	 * @param connection
+	 * @param sql
+	 * @param params
+	 * @return Selected rows in list of maps.
+	 * @throws RichSQLException
+	 */
+	public static List<Map<String, Object>> executeQueryMapList(
+			final Connection connection,
+			final String sql,
+			final List<Object> params)
+			throws RichSQLException {
+		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
+			JDBCUtils.fillPreparedStatementParams(ps, params);
+			try (final ResultSet rs = ps.executeQuery()) {
+				ResultSetMetaData metaData = rs.getMetaData();
+				int columnCount = metaData.getColumnCount();
+				List<Map<String, Object>> mapList = new ArrayList<>();
+				while (rs.next()) {
+					Map<String, Object> map = new HashMap<>();
+					for (int i = 1; i <= columnCount; i++) {
+						String name = metaData.getColumnName(i);
+						map.put(name, rs.getObject(i));
+					}
+					mapList.add(map);
+				}
+				return mapList;
 			}
 		} catch (final SQLException ex) {
 			throw new RichSQLException(ex, sql, params);
