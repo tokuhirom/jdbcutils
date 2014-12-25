@@ -7,9 +7,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import lombok.SneakyThrows;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,8 +19,8 @@ public class JDBCUtilsTest {
 	private Connection connection;
 
 	@Before
-	@SneakyThrows
-	public void before() {
+	public void before() throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 
 		String dburl = System.getProperty("test.dburl");
@@ -31,6 +33,13 @@ public class JDBCUtilsTest {
 		}
 
 		connection = DriverManager.getConnection(dburl, dbuser, dbpassword);
+	}
+
+	@After
+	public void after() throws SQLException {
+		if (connection != null) {
+			connection.close();
+		}
 	}
 
 	@Test
@@ -46,12 +55,12 @@ public class JDBCUtilsTest {
 								connection,
 								"CREATE TABLE x (id integer unsigned auto_increment primary key, name varchar(255) not null)"));
 		assertEquals(
-				1,
+				2,
 				JDBCUtils
 						.executeUpdate(
 								connection,
-								"INSERT INTO x (name) VALUES (?)",
-								Arrays.asList("hoge")));
+								"INSERT INTO x (name) VALUES (?),(?)",
+								Arrays.asList("hoge", "fuga")));
 		assertEquals("hoge", JDBCUtils.executeQuery(
 				connection,
 				"SELECT * FROM x WHERE name=?",
@@ -64,6 +73,37 @@ public class JDBCUtilsTest {
 				connection,
 				"SELECT GET_LOCK('hoge', 100)",
 				Arrays.asList());
+		assertEquals(
+				Arrays.asList(
+						new MapBuilder<String, Object>()
+								.put("id", 2L)
+								.put("name", "fuga")
+								.build(),
+						new MapBuilder<String, Object>()
+								.put("id", 1L)
+								.put("name", "hoge")
+								.build()
+						),
+				JDBCUtils.executeQueryMapList(connection,
+						"SELECT * FROM x ORDER BY id DESC",
+						Collections.emptyList()));
+	}
+
+	public static class MapBuilder<K, V> {
+		private Map<K, V> map;
+
+		public MapBuilder() {
+			this.map = new HashMap<>();
+		}
+
+		public MapBuilder<K, V> put(K key, V value) {
+			map.put(key, value);
+			return this;
+		}
+
+		public Map<K, V> build() {
+			return Collections.unmodifiableMap(map);
+		}
 	}
 
 	@Test
