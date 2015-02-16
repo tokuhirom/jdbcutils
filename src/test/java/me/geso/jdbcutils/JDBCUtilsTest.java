@@ -3,13 +3,18 @@ package me.geso.jdbcutils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.beans.IntrospectionException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 
 import org.junit.After;
 import org.junit.Before;
@@ -122,5 +127,42 @@ public class JDBCUtilsTest {
 					this.connection);
 			assertEquals("`hogefuga``higehige``hagahaga`", got);
 		}
+	}
+
+	@Test
+	public void testBean() throws RichSQLException, InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, IntrospectionException {
+		assertEquals(0, JDBCUtils
+				.executeUpdate(
+						connection,
+						"DROP TABLE IF EXISTS bean"));
+		assertEquals(
+				0,
+				JDBCUtils
+						.executeUpdate(
+								connection,
+								"CREATE TABLE bean (id integer unsigned, name varchar(255))"));
+		assertEquals(
+				2,
+				JDBCUtils
+						.executeUpdate(
+								connection,
+								"INSERT INTO bean (id,name) VALUES (?,?), (?,?)",
+								Arrays.asList(1, "hoge", 2, "fuga")));
+		List<Bean> beans = JDBCUtils.executeQueryForBean(connection,
+				"SELECT * FROM bean ORDER BY id", Collections.emptyList(),
+				Bean.class);
+		assertEquals(2, beans.size());
+		assertEquals(1, beans.get(0).getId());
+		assertEquals("hoge", beans.get(0).getName());
+		assertEquals(2, beans.get(1).getId());
+		assertEquals("fuga", beans.get(1).getName());
+	}
+
+	@Data
+	public static class Bean {
+		private long id;
+		private String name;
 	}
 }

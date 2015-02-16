@@ -1,5 +1,11 @@
 package me.geso.jdbcutils;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -112,6 +118,58 @@ public class JDBCUtils {
 					mapList.add(map);
 				}
 				return mapList;
+			}
+		} catch (final SQLException ex) {
+			throw new RichSQLException(ex, sql, params);
+		}
+	}
+
+	/**
+	 * [EXPERIMENTAL] Execute a query and map the result to the bean.
+	 *
+	 * @param connection
+	 * @param sql
+	 * @param params
+	 * @return Selected rows in list of beans.
+	 * @throws RichSQLException
+	 * @throws IntrospectionException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 */
+	public static <T> List<T> executeQueryForBean(
+			final Connection connection,
+			final String sql,
+			final List<Object> params,
+			final Class<T> valueClass)
+			throws RichSQLException, IntrospectionException,
+			InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		// Get bean information first.
+		BeanInfo beanInfo = Introspector.getBeanInfo(valueClass, Object.class);
+		PropertyDescriptor[] propertyDescriptors = beanInfo
+				.getPropertyDescriptors();
+
+		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
+			JDBCUtils.fillPreparedStatementParams(ps, params);
+			try (final ResultSet rs = ps.executeQuery()) {
+				List<T> valueList = new ArrayList<>();
+				while (rs.next()) {
+					T row = valueClass.newInstance();
+					for (PropertyDescriptor prop : propertyDescriptors) {
+						Method writeMethod = prop.getWriteMethod();
+						if (writeMethod != null) {
+							String name = prop.getName();
+							Object value = rs.getObject(name);
+							if (value != null) {
+								writeMethod.invoke(row, value);
+							}
+						}
+					}
+					valueList.add(row);
+				}
+				return valueList;
 			}
 		} catch (final SQLException ex) {
 			throw new RichSQLException(ex, sql, params);
