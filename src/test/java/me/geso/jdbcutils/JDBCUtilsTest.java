@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Data;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import lombok.Data;
 
 public class JDBCUtilsTest {
 	private Connection connection;
@@ -50,48 +50,61 @@ public class JDBCUtilsTest {
 	@Test
 	public void test() throws RichSQLException {
 		assertEquals(0, JDBCUtils
+			.executeUpdate(
+				connection,
+				"DROP TABLE IF EXISTS x"));
+		assertEquals(
+			0,
+			JDBCUtils
 				.executeUpdate(
-						connection,
-						"DROP TABLE IF EXISTS x"));
+					connection,
+					"CREATE TABLE x (id integer unsigned auto_increment primary key, name varchar(255) not null)"));
 		assertEquals(
-				0,
-				JDBCUtils
-						.executeUpdate(
-								connection,
-								"CREATE TABLE x (id integer unsigned auto_increment primary key, name varchar(255) not null)"));
-		assertEquals(
-				2,
-				JDBCUtils
-						.executeUpdate(
-								connection,
-								"INSERT INTO x (name) VALUES (?),(?)",
-								Arrays.asList("hoge", "fuga")));
+			2,
+			JDBCUtils
+				.executeUpdate(
+					connection,
+					"INSERT INTO x (name) VALUES (?),(?)",
+					Arrays.asList("hoge", "fuga")));
 		assertEquals("hoge", JDBCUtils.executeQuery(
-				connection,
-				"SELECT * FROM x WHERE name=?",
-				Arrays.asList("hoge"),
-				(rs) -> {
-					assertTrue(rs.next());
-					return rs.getString("name");
-				}));
+			connection,
+			"SELECT * FROM x WHERE name=?",
+			Arrays.asList("hoge"),
+			(rs) -> {
+				assertTrue(rs.next());
+				return rs.getString("name");
+			}));
 		JDBCUtils.executeQuery(
-				connection,
-				"SELECT GET_LOCK('hoge', 100)",
-				Arrays.asList());
+			connection,
+			"SELECT GET_LOCK('hoge', 100)",
+			Arrays.asList());
 		assertEquals(
-				Arrays.asList(
-						new MapBuilder<String, Object>()
-								.put("id", 2L)
-								.put("name", "fuga")
-								.build(),
-						new MapBuilder<String, Object>()
-								.put("id", 1L)
-								.put("name", "hoge")
-								.build()
-						),
-				JDBCUtils.executeQueryMapList(connection,
-						"SELECT * FROM x ORDER BY id DESC",
-						Collections.emptyList()));
+			Arrays.asList(
+				new MapBuilder<String, Object>()
+					.put("id", 2L)
+					.put("name", "fuga")
+					.build(),
+				new MapBuilder<String, Object>()
+					.put("id", 1L)
+					.put("name", "hoge")
+					.build()
+				),
+			JDBCUtils.executeQueryMapList(connection,
+				"SELECT * FROM x ORDER BY id DESC",
+				Collections.emptyList()));
+		// Support `AS` for `executeQueryMapList
+		assertEquals(
+			Arrays.asList(
+				new MapBuilder<String, Object>()
+					.put("iii", 2L)
+					.build(),
+				new MapBuilder<String, Object>()
+					.put("iii", 1L)
+					.build()
+				),
+			JDBCUtils.executeQueryMapList(connection,
+				"SELECT id AS iii FROM x ORDER BY id DESC",
+				Collections.emptyList()));
 	}
 
 	public static class MapBuilder<K, V> {
@@ -115,16 +128,16 @@ public class JDBCUtilsTest {
 	public void testQuoteIdentifier() throws SQLException {
 		{
 			String got = JDBCUtils.quoteIdentifier(
-					"hogefuga\"higehige\"hagahaga",
-					"\"");
+				"hogefuga\"higehige\"hagahaga",
+				"\"");
 			assertEquals("\"hogefuga\"\"higehige\"\"hagahaga\"", got);
 		}
 		{
 			String q = this.connection.getMetaData().getIdentifierQuoteString();
 			assertEquals("`", q);
 			String got = JDBCUtils.quoteIdentifier(
-					"hogefuga`higehige`hagahaga",
-					this.connection);
+				"hogefuga`higehige`hagahaga",
+				this.connection);
 			assertEquals("`hogefuga``higehige``hagahaga`", got);
 		}
 	}
@@ -134,25 +147,25 @@ public class JDBCUtilsTest {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, IntrospectionException {
 		assertEquals(0, JDBCUtils
+			.executeUpdate(
+				connection,
+				"DROP TABLE IF EXISTS bean"));
+		assertEquals(
+			0,
+			JDBCUtils
 				.executeUpdate(
-						connection,
-						"DROP TABLE IF EXISTS bean"));
+					connection,
+					"CREATE TABLE bean (id integer unsigned, name varchar(255))"));
 		assertEquals(
-				0,
-				JDBCUtils
-						.executeUpdate(
-								connection,
-								"CREATE TABLE bean (id integer unsigned, name varchar(255))"));
-		assertEquals(
-				2,
-				JDBCUtils
-						.executeUpdate(
-								connection,
-								"INSERT INTO bean (id,name) VALUES (?,?), (?,?)",
-								Arrays.asList(1, "hoge", 2, "fuga")));
+			2,
+			JDBCUtils
+				.executeUpdate(
+					connection,
+					"INSERT INTO bean (id,name) VALUES (?,?), (?,?)",
+					Arrays.asList(1, "hoge", 2, "fuga")));
 		List<Bean> beans = JDBCUtils.executeQueryForBean(connection,
-				"SELECT * FROM bean ORDER BY id", Collections.emptyList(),
-				Bean.class);
+			"SELECT * FROM bean ORDER BY id", Collections.emptyList(),
+			Bean.class);
 		assertEquals(2, beans.size());
 		assertEquals(1, beans.get(0).getId());
 		assertEquals("hoge", beans.get(0).getName());

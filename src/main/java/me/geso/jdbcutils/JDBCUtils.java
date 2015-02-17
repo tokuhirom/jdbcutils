@@ -25,7 +25,7 @@ public class JDBCUtils {
 
 	/**
 	 * Execute query with callback.
-	 * 
+	 *
 	 * @param connection
 	 * @param query
 	 * @param callback
@@ -37,13 +37,13 @@ public class JDBCUtils {
 			final ResultSetCallback<R> callback)
 			throws RichSQLException {
 		return JDBCUtils.executeQuery(connection,
-				query.getSQL(), query.getParameters(),
-				callback);
+			query.getSQL(), query.getParameters(),
+			callback);
 	}
 
 	/**
 	 * Execute query with callback.
-	 * 
+	 *
 	 * @param connection
 	 * @param sql
 	 * @param params
@@ -69,7 +69,7 @@ public class JDBCUtils {
 	/**
 	 * Execute query without callback.
 	 * This method is useful when calling the SELECT query has side effects, e.g. `SELECT GET_LOCK('hoge', 3)`.
-	 * 
+	 *
 	 * @param connection
 	 * @param sql
 	 * @param params
@@ -91,7 +91,7 @@ public class JDBCUtils {
 	/**
 	 * Execute query without callback.
 	 * This method returns results as {@code List<Map<String, Object>>}.
-	 * 
+	 *
 	 * @param connection
 	 * @param sql
 	 * @param params
@@ -112,7 +112,7 @@ public class JDBCUtils {
 				while (rs.next()) {
 					Map<String, Object> map = new HashMap<>();
 					for (int i = 1; i <= columnCount; i++) {
-						String name = metaData.getColumnName(i);
+						String name = metaData.getColumnLabel(i);
 						map.put(name, rs.getObject(i));
 					}
 					mapList.add(map);
@@ -149,7 +149,7 @@ public class JDBCUtils {
 		// Get bean information first.
 		BeanInfo beanInfo = Introspector.getBeanInfo(valueClass, Object.class);
 		PropertyDescriptor[] propertyDescriptors = beanInfo
-				.getPropertyDescriptors();
+			.getPropertyDescriptors();
 
 		try (final PreparedStatement ps = connection.prepareStatement(sql)) {
 			JDBCUtils.fillPreparedStatementParams(ps, params);
@@ -178,7 +178,7 @@ public class JDBCUtils {
 
 	/**
 	 * Execute query.
-	 * 
+	 *
 	 * @param connection
 	 * @param query
 	 * @return Affected rows.
@@ -188,12 +188,12 @@ public class JDBCUtils {
 			final Query query)
 			throws RichSQLException {
 		return JDBCUtils.executeUpdate(connection, query.getSQL(),
-				query.getParameters());
+			query.getParameters());
 	}
 
 	/**
 	 * Execute query.
-	 * 
+	 *
 	 * @param connection
 	 * @param sql
 	 * @param params
@@ -214,7 +214,7 @@ public class JDBCUtils {
 
 	/**
 	 * Shorthand method.
-	 * 
+	 *
 	 * @param connection
 	 * @param sql
 	 * @return
@@ -224,16 +224,16 @@ public class JDBCUtils {
 			final String sql)
 			throws RichSQLException {
 		return JDBCUtils
-				.executeUpdate(connection, sql, Collections.emptyList());
+			.executeUpdate(connection, sql, Collections.emptyList());
 	}
 
 	/**
 	 * Fill parameters for prepared statement.
-	 * 
+	 *
 	 * <pre>
 	 * <code>JDBCUtils.fillPreparedStatementParams(preparedStatement, ImmutableList.of(1,2,3));</code>
 	 * </pre>
-	 * 
+	 *
 	 * @param preparedStatement
 	 * @param params
 	 * @throws SQLException
@@ -257,14 +257,14 @@ public class JDBCUtils {
 	public static String quoteIdentifier(final String identifier,
 			final String identifierQuoteString) {
 		return identifierQuoteString
-				+ identifier.replace(identifierQuoteString,
-						identifierQuoteString + identifierQuoteString)
-				+ identifierQuoteString;
+			+ identifier.replace(identifierQuoteString,
+				identifierQuoteString + identifierQuoteString)
+			+ identifierQuoteString;
 	}
 
 	/**
 	 * Quote SQL identifier.
-	 * 
+	 *
 	 * @param identifier
 	 * @param connection
 	 * @return
@@ -276,7 +276,7 @@ public class JDBCUtils {
 			throw new NullPointerException();
 		}
 		String identifierQuoteString = connection.getMetaData()
-				.getIdentifierQuoteString();
+			.getIdentifierQuoteString();
 		return quoteIdentifier(identifier, identifierQuoteString);
 	}
 
