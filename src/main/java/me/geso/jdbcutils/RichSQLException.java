@@ -11,16 +11,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RichSQLException extends Exception {
-	private static final Logger logger = LoggerFactory
-			.getLogger(RichSQLException.class);
+	private static final Logger LOGGER = LoggerFactory
+		.getLogger(RichSQLException.class);
 
 	private final String sql;
 	private final List<Object> params;
 
 	public RichSQLException(SQLException ex, String sql, List<Object> params) {
 		super(ex);
-		logger.error("SQLException: {} {} {}", ex.getMessage(), sql,
-				params.toString());
+		LOGGER.error("SQLException: {} {} {}", ex.getMessage(), sql,
+			params.toString());
 		this.sql = sql;
 		this.params = params;
 	}
