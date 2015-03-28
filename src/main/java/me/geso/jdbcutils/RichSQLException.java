@@ -18,7 +18,7 @@ public class RichSQLException extends Exception {
 	private final List<Object> params;
 
 	public RichSQLException(SQLException ex, String sql, List<Object> params) {
-		super(ex);
+		super("SQL Exception: " + sql + "(" + params.toString() + ")", ex);
 		LOGGER.error("SQLException: {} {} {}", ex.getMessage(), sql,
 			params.toString());
 		this.sql = sql;
