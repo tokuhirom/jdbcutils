@@ -29,6 +29,7 @@ public class JDBCUtils {
 
 	/**
 	 * Execute query, and return stream.
+	 * <B>You must call .close() after using.</B> I recommend to use try-with-resources.
 	 *
 	 * @param connection JDBC connection
 	 * @param query SQL query
@@ -47,6 +48,7 @@ public class JDBCUtils {
 
 	/**
 	 * Execute query, and return stream.
+	 * <B>You must call .close() after using.</B> I recommend to use try-with-resources.
 	 *
 	 * @param connection JDBC connection
 	 * @param sql SQL query
