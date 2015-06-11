@@ -16,12 +16,75 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Utility functions for JDBC.
  *
  */
 public class JDBCUtils {
+
+	/**
+	 * Execute query, and return stream.
+	 *
+	 * @param connection JDBC connection
+	 * @param query SQL query
+	 * @param callback callback function. It will call every row.
+	 * @return Stream
+	 * @throws RichSQLException
+	 */
+	public static <R> Stream<R> executeQueryStream(final Connection connection,
+			final Query query,
+			final ResultSetCallback<R> callback)
+			throws RichSQLException {
+		return JDBCUtils.executeQueryStream(connection,
+			query.getSQL(), query.getParameters(),
+			callback);
+	}
+
+	/**
+	 * Execute query, and return stream.
+	 *
+	 * @param connection JDBC connection
+	 * @param sql SQL query
+	 * @param params parameters
+	 * @param callback callback function. It will call every row.
+	 * @return Stream
+	 * @throws RichSQLException
+	 */
+	public static <R> Stream<R> executeQueryStream(final Connection connection,
+			final String sql,
+			final List<Object> params,
+			final ResultSetCallback<R> callback)
+			throws RichSQLException {
+		try {
+			final PreparedStatement ps = connection.prepareStatement(sql);
+			JDBCUtils.fillPreparedStatementParams(ps, params);
+			final ResultSet rs = ps.executeQuery();
+			final ResultSetIterator<R> iterator = new ResultSetIterator<>(rs, sql, params, callback);
+			Spliterator<R> spliterator = Spliterators.spliteratorUnknownSize(
+				iterator, Spliterator.NONNULL | Spliterator.ORDERED | Spliterator.SIZED);
+			final Stream<R> stream = StreamSupport.stream(spliterator, false);
+			stream.onClose(() -> {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					throw new UncheckedRichSQLException(e);
+				}
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					throw new UncheckedRichSQLException(e);
+				}
+			});
+			return stream;
+		} catch (final SQLException ex) {
+			throw new RichSQLException(ex, sql, params);
+		}
+	}
 
 	/**
 	 * Execute query with callback.

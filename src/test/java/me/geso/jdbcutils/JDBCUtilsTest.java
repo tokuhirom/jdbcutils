@@ -1,7 +1,6 @@
 package me.geso.jdbcutils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,7 +70,7 @@ public class JDBCUtilsTest {
 		assertEquals("hoge", JDBCUtils.executeQuery(
 			connection,
 			"SELECT * FROM x WHERE name=?",
-			Arrays.asList("hoge"),
+			Collections.singletonList("hoge"),
 			(rs) -> {
 				assertTrue(rs.next());
 				return rs.getString("name");
@@ -77,7 +78,28 @@ public class JDBCUtilsTest {
 		JDBCUtils.executeQuery(
 			connection,
 			"SELECT GET_LOCK('hoge', 100)",
-			Arrays.asList());
+			Collections.emptyList());
+		try (Stream<Map<String, Object>> stream = JDBCUtils.executeQueryStream(connection,
+			"SELECT * FROM x ORDER BY id DESC",
+			Collections.emptyList(),
+			rs -> {
+				Map<String, Object> result = new HashMap<>();
+				result.put("id", rs.getLong(1));
+				result.put("name", rs.getString(2));
+				return result;
+			})) {
+			assertEquals(
+				Arrays.asList(
+					new MapBuilder<String, Object>()
+						.put("id", 2L)
+						.put("name", "fuga")
+						.build(),
+					new MapBuilder<String, Object>()
+						.put("id", 1L)
+						.put("name", "hoge")
+						.build()
+					), stream.collect(Collectors.toList()));
+		}
 		assertEquals(
 			Arrays.asList(
 				new MapBuilder<String, Object>()

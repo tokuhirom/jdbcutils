@@ -18,6 +18,10 @@ public class UncheckedRichSQLException extends RuntimeException {
 		this.exception = e;
 	}
 
+	public UncheckedRichSQLException(SQLException e) {
+		this(new RichSQLException(e));
+	}
+
 	public String getSql() {
 		return this.exception.getSql();
 	}
