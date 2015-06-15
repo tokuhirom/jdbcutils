@@ -1,6 +1,7 @@
 package me.geso.jdbcutils;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,11 +19,15 @@ public class RichSQLException extends Exception {
 	private final List<Object> params;
 
 	public RichSQLException(SQLException ex, String sql, List<Object> params) {
-		super("SQL Exception: " + sql + "(" + params.toString() + ")", ex);
+		super("SQL Exception: " + ex.getMessage() + ":" + sql + "(" + params.toString() + ")", ex);
 		LOGGER.error("SQLException: {} {} {}", ex.getMessage(), sql,
 			params.toString());
 		this.sql = sql;
 		this.params = params;
+	}
+
+	public RichSQLException(final SQLException e) {
+		this(e, "", Collections.emptyList());
 	}
 
 	public String getSql() {
