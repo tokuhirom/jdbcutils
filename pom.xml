@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.geso</groupId>
 	<artifactId>jdbcutils</artifactId>
-	<version>2.1.1-SNAPSHOT</version>
+	<version>2.2.0</version>
 	<name>jdbcutils</name>
 	<description>jdbcutils</description>
 	<url>http://github.com/tokuhirom/jdbcutils</url>
@@ -17,7 +17,7 @@
 		<url>https://github.com/tokuhirom/jdbcutils/</url>
 		<connection>scm:git:git://github.com/tokuhirom/jdbcutils.git</connection>
 		<developerConnection>scm:git:git@github.com:tokuhirom/jdbcutils.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>jdbcutils-2.2.0</tag>
   </scm>
 
     <developers>
