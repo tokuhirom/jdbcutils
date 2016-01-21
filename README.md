@@ -3,6 +3,7 @@ jdbcutils
 
 [![Build Status](https://travis-ci.org/tokuhirom/jdbcutils.svg?branch=master)](https://travis-ci.org/tokuhirom/jdbcutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.geso/jdbcutils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/me.geso/jdbcutils)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/me.geso/jdbcutils/badge.svg)](http://www.javadoc.io/doc/me.geso/jdbcutils/)
 
 This is a tiny utility library for JDBC.
 
